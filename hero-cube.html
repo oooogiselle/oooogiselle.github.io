@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Hero Cube — three.js (per-face text + bright + rounded)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    html,body{height:100%;margin:0;background:#000;color:#e8eaed}
+    #info{position:absolute;left:16px;top:12px;font:12px/1.4 system-ui;opacity:.7}
+    canvas{display:block}
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.159.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.159.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.165.0/examples/jsm/controls/OrbitControls.js";
+    import { RoomEnvironment } from "https://unpkg.com/three@0.165.0/examples/jsm/environments/RoomEnvironment.js";
+    import { RoundedBoxGeometry } from "https://unpkg.com/three@0.165.0/examples/jsm/geometries/RoundedBoxGeometry.js";
+
+    let scene, camera, renderer, controls, cube;
+
+    init();
+    animate();
+
+    function makeTextTexture(text, opts = {}) {
+      const {
+        size = 512,
+        font = "bold 56px Inter, system-ui, -apple-system, Segoe UI, Roboto",
+        color = "#ffffff",
+        bg = "transparent",    // or e.g. "#111"
+        lineHeight = 68
+      } = opts;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      if (bg !== "transparent") {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0,0,size,size);
+      }
+
+      ctx.fillStyle = color;
+      ctx.font = font;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const lines = String(text).split("\n");
+      const startY = size/2 - ((lines.length-1) * lineHeight)/2;
+      lines.forEach((line,i)=> {
+        ctx.fillText(line, size/2, startY + i*lineHeight);
+      });
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 8;
+      return tex;
+    }
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 50);
+      camera.position.set(0, 0.6, 3.2);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(devicePixelRatio);
+      renderer.setSize(innerWidth, innerHeight);
+      // brighter overall
+      renderer.toneMappingExposure = 1.25;
+      document.body.appendChild(renderer.domElement);
+
+      // nice reflections
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment()).texture;
+
+      // ---------- per-face text ----------
+      const faceTexts = [
+        "HI!",     // +X
+        "ENGINEERING",          // -X
+        "DARTMOUTH \n '27",   // +Y
+        "COMPUTER \n SCIENCE", // -Y
+        "MY NAME IS \n GISELLE",    // +Z
+        "DESIGN"       // -Z
+      ];
+
+      const materials = faceTexts.map(label => {
+        const tex = makeTextTexture(label);
+        // use same texture as emissiveMap so the letters “glow”
+        return new THREE.MeshStandardMaterial({
+          map: tex,
+          emissive: new THREE.Color(0xffffff),
+          emissiveMap: tex,
+          emissiveIntensity: 0.6,   // ↑ for more glow
+          roughness: 0.2,
+          metalness: 0.15
+        });
+      });
+
+      // ---------- rounded corners ----------
+      // RoundedBoxGeometry(width, height, depth, segments, radius)
+      const geo = new RoundedBoxGeometry(1.2, 1.2, 1.2, 10, 0.28); // increase radius for rounder corners
+      cube = new THREE.Mesh(geo, materials);
+      scene.add(cube);
+
+      // lighting: directional + ambient to lift shadows
+      scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+      const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+      dir.position.set(2, 3, 4);
+      scene.add(dir);
+
+      // controls
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;       // no scroll/pinch zoom
+      controls.enablePan  = false;       // optional: lock panning too
+
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 3.2;
+
+      addEventListener('resize', onResize);
+    }
+
+    function onResize(){
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    }
+
+    function animate(){
+      controls.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+  </script>
+</body>
+</html>
