@@ -7,7 +7,6 @@ export default function AboutMe() {
   const sectionRef = useRef(null);
   const [range, setRange] = useState({ start: 0, end: 0 });
 
-  // compute the scroll position where the section center = viewport center
   useLayoutEffect(() => {
     function calc() {
       const el = sectionRef.current;
@@ -16,9 +15,8 @@ export default function AboutMe() {
       const top = rect.top + window.scrollY;
       const h = rect.height;
       const vh = window.innerHeight;
-
-      const end = top + h / 2 - vh / 2;   // settle point
-      const start = end - vh * 0.9;       // begin ~0.9 viewport earlier
+      const end = top + h / 2 - vh / 2;
+      const start = end - vh * 0.9;
       setRange({ start, end });
     }
     calc();
@@ -32,7 +30,6 @@ export default function AboutMe() {
 
   return (
     <section id="about" className="about-me" ref={sectionRef}>
-      {/* Photo: fly in from left, settle at center */}
       <Parallax
         startScroll={range.start}
         endScroll={range.end}
@@ -49,7 +46,6 @@ export default function AboutMe() {
         </div>
       </Parallax>
 
-      {/* Text: fly in from right, settle at center */}
       <Parallax
         startScroll={range.start}
         endScroll={range.end}
@@ -62,15 +58,17 @@ export default function AboutMe() {
         <div className="introduction-text">
           <h1>Dartmouth College | CS Modified with Engineering</h1>
           <p>
-            Hi! I'm Giselle, a junior at Dartmouth College. I’m passionate about the
-            intersection of software, hardware, and design, and I focus on crafting tech
-            that’s functional, beautiful, and user-friendly. My project interests include
-            game and social media design. Outside of working, you can find me dancing
-            with Sheba Dance Troupe, running, or making clothes and teddy bears in the
-            Makerspace.
+            Hi, I'm Giselle — a junior at Dartmouth building at the intersection of
+            software, hardware, and design. Currently an Engineering Intern at Siemens EDA,
+            I've also done FPGA work building a VGA Tamagotchi game from scratch in VHDL,
+            researched ionospheric data at Lynch Rocket Lab, and built full-stack apps
+            used by real people.
           </p>
-
-          {/* CTA: lift from bottom */}
+          <p>
+            Outside of tech, I perform with Sheba Dance Troupe, run, travel, and spend
+            time in the Makerspace and the Ceramics Studio.
+            I care about building things that are functional, beautiful, and actually fun to use.
+          </p>
           <Parallax
             startScroll={range.start}
             endScroll={range.end}

@@ -1,21 +1,21 @@
-// src/components/ExperienceTimeline.jsx
+// src/components/WorkTimeline.jsx
 import { useMemo, useRef, useState, useLayoutEffect } from "react";
 import { Parallax } from "react-scroll-parallax";
 import { motion } from "framer-motion";
 
 export default function ExperienceTimeline() {
   const items = useMemo(() => ([
-    { id:1, range:"May 2025 – Present", company:"Harold Edward Cable Makerspace", role:"Trainee", location:"Hanover, NH" },
-    { id:2, range:"May 2025 – Present", company:"Jacobson Lab", role:"URAD Intern", location:"Hanover, NH" },
-    { id:3, range:"Jan 2024 – Jan 2025", company:"Lynch Rocket Lab", role:"Data Analytics Intern", location:"Hanover, NH" },
-    { id:4, range:"Jun 2024 – Aug 2024", company:"INTSIG", role:"Returning Data Analytics Intern", location:"Shanghai, China" },
-    { id:5, range:"Jun 2023 – Aug 2023", company:"INTSIG", role:"Data Analytics Intern", location:"Shanghai, China" },
+    { id:1, range:"Jan 2026 – Present",   company:"Siemens EDA",                    role:"Engineering Intern",            location:"Santa Clara, CA" },
+    { id:2, range:"May 2025 – Present",   company:"Harold Edward Cable Makerspace", role:"Trainee",                       location:"Hanover, NH" },
+    { id:3, range:"May 2025 – Present",   company:"Jacobson Lab",                   role:"URAD Intern",                   location:"Hanover, NH" },
+    { id:4, range:"Jan 2024 – Jan 2025",  company:"Lynch Rocket Lab",               role:"Data Analytics Intern",         location:"Hanover, NH" },
+    { id:5, range:"Jun 2024 – Aug 2024",  company:"INTSIG",                         role:"Returning Data Analytics Intern",location:"Shanghai, China" },
+    { id:6, range:"Jun 2023 – Aug 2023",  company:"INTSIG",                         role:"Data Analytics Intern",         location:"Shanghai, China" },
   ]), []);
 
   const secRef = useRef(null);
   const [range, setRange] = useState({ start: 0, end: 0 });
 
-  // compute a window where items "slide to a stop" just before center
   useLayoutEffect(() => {
     const calc = () => {
       const el = secRef.current;
@@ -24,7 +24,7 @@ export default function ExperienceTimeline() {
       const top = r.top + window.scrollY;
       const h = r.height;
       const vh = window.innerHeight;
-      const settleOffset = 80; // lock a bit before the center
+      const settleOffset = 80;
       const end = top + h / 2 - vh / 2 - settleOffset;
       const start = Math.max(0, end - vh * 0.9);
       setRange({ start, end });
@@ -50,8 +50,8 @@ export default function ExperienceTimeline() {
             key={it.id}
             startScroll={range.start}
             endScroll={range.end}
-            translateY={[30, 0]}                        // soft parallax up → lock
-            translateX={i % 2 ? [48, 0] : [-48, 0]}     // alternate sides
+            translateY={[30, 0]}
+            translateX={i % 2 ? [48, 0] : [-48, 0]}
             scale={[0.98, 1]}
             opacity={[0.85, 1]}
             easing="easeOutCubic"
@@ -64,10 +64,10 @@ export default function ExperienceTimeline() {
               viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.55, ease: "easeOut", delay: i * 0.05 }}
             >
-              <span className="tl-dot" aria-hidden />
+              <span className="tl-dot" aria-hidden="true" />
               <div className="tl-card">
                 <p className="tl-range">{it.range}</p>
-                <a className="tl-company" href="#" onClick={(e)=>e.preventDefault()}>{it.company}</a>
+                <span className="tl-company">{it.company}</span>
                 <p className="tl-location"><em>{it.location}</em></p>
                 <p className="tl-role">{it.role}</p>
               </div>

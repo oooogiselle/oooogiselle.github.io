@@ -12,15 +12,20 @@ import { ParallaxProvider } from 'react-scroll-parallax';
 export default function App() {
   return (
     <ParallaxProvider>
-      <div className="wr">
-        <Nav />
-        <Hero />
-        <AboutMe />
-        <Projects />
-        <Skills />
-        <WorkTimeline />
-        <Contact />
-      </div>
+      <>
+        {/* skip link — first focusable element on the page */}
+        <a href="#about" className="skip-link">Skip to content</a>
+        <div className="wr">
+          <Nav />
+          <Hero />
+          <AboutMe />
+          <Projects />
+          <Skills />
+          <WorkTimeline />
+          <Contact />
+          <Footer />
+        </div>
+      </>
     </ParallaxProvider>
   );
 }

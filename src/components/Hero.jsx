@@ -1,43 +1,46 @@
 // src/components/Hero.jsx
-import { Parallax } from "react-scroll-parallax";
+import { useEffect, useRef } from "react";
 
 export default function Hero() {
+  const lineRef = useRef(null);
+
+  useEffect(() => {
+    const el = lineRef.current;
+    if (!el) return;
+    el.style.width = "0";
+    requestAnimationFrame(() => {
+      el.style.transition = "width 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s";
+      el.style.width = "100%";
+    });
+  }, []);
+
   return (
     <section id="top" className="wr-hero">
-      {/* background layer (slow) */}
-      <Parallax speed={-20} className="hero-bg-layer" aria-hidden>
-        <div className="hero-bg-glow" />
-      </Parallax>
+      <div className="hero-type">
+        <p className="hero-eyebrow">Portfolio — 2026</p>
 
-      <div className="hero-grid">
-        {/* left caption */}
-        <Parallax speed={-8} opacity={[1, 0.6]}>
-          <p className="side-caption left">
-            A COLLECTION OF COMPUTER SCIENCE &amp; ENGINEERING PROJECTS
-          </p>
-        </Parallax>
+        <h1 className="hero-name">
+          <span className="hero-name-line" style={{ "--delay": "0s" }}>GISELLE</span>
+          <span className="hero-name-line" style={{ "--delay": "0.1s" }}>WU</span>
+        </h1>
 
-        {/* center visual */}
-        <Parallax speed={-14} scale={[1.02, 1]} opacity={[1, 0.9]}>
-          <div className="hero-visual">
-            <iframe
-              src="/hero-cube.html"
-              title="Hero Cube"
-              style={{ width: "100%", height: "70vh", border: 0 }}
-            />
-          </div>
-        </Parallax>
+        <div className="hero-rule-wrap">
+          <div className="hero-rule" ref={lineRef} />
+        </div>
 
-        {/* right caption */}
-        <Parallax speed={-4} opacity={[1, 0.7]}>
-          <p className="side-caption right">
-            GISELLE WU @ DARTMOUTH COLLEGE — 2025
-          </p>
-        </Parallax>
+        <div className="hero-descriptors">
+          <span style={{ "--delay": "0.55s" }}>Software</span>
+          <span className="hero-dot" style={{ "--delay": "0.65s" }}>·</span>
+          <span style={{ "--delay": "0.72s" }}>Hardware</span>
+          <span className="hero-dot" style={{ "--delay": "0.82s" }}>·</span>
+          <span style={{ "--delay": "0.89s" }}>Design</span>
+        </div>
+
+        <div className="hero-footer-row">
+          <p className="hero-school" style={{ "--delay": "1s" }}>Dartmouth College</p>
+          <a className="hero-scroll" href="#about" style={{ "--delay": "1.1s" }}>Scroll ↓</a>
+        </div>
       </div>
-
-      {/* scroll hint → new page feel */}
-      <a className="scroll" href="#about">SCROLL TO EXPLORE<br /><span>↓</span></a>
     </section>
   );
 }
