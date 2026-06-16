@@ -37,6 +37,7 @@ body, body * {
 *{box-sizing:border-box} html,body,#root{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Inter, system-ui; overflow-x: hidden;}
 a{color:inherit;text-decoration:none}
+button { cursor: pointer; }
 html {
     margin:0;
     padding:0;
@@ -55,82 +56,6 @@ html {
 .wr-nav nav a{font-size:.9rem; letter-spacing:.1em; color:var(--muted)}
 .wr-nav nav a:hover{color:var(--fg)}
 
-/* HERO layout like the reference */
-.wr-hero{
-  position:relative;
-  min-height:100vh;
-  background:var(--bg);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow: hidden;
-  padding:0 2rem;
-}
-.hero-grid{
-  display:grid;
-  grid-template-columns: 1fr minmax(280px, 720px) 1fr;
-  align-items:center;
-  z-index: 1;
-  position:relative;
-  gap:2rem;
-  width:100%;
-  max-width:1280px;
-  margin: 0 auto;
-}
-
-.hero-bg-layer{ position:absolute; inset:0; z-index:0; pointer-events:none; }
-
-
-/* Equal-importance side captions */
-.side-caption{
-  color:#bfbfbf;
-  text-transform:uppercase;
-  letter-spacing:.18em;
-  font-size:10px;
-  line-height:1.4;
-  margin:0;
-}
-.side-caption.left{ justify-self:start; text-align:left; }
-.side-caption.right{ justify-self:end; text-align:right; }
-
-/* Center visual */
-.hero-visual{
-  justify-self:center;
-  align-self:center;
-}
-.hero-visual img{
-  display:block;
-  width:min(70vw, 560px);
-  height:auto;
-  object-fit:contain;
-  filter:saturate(1) contrast(1.05);
-}
-
-/* Scroll hint */
-.wr-hero .scroll{
-  position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
-  color:#9aa0a6; font-size:.8rem; letter-spacing:.18em; text-align:center;
-}
-.wr-hero .scroll span{ display:inline-block; animation:bounce 1.4s infinite; }
-@keyframes bounce{ 50%{ transform:translateY(4px) } }
-
-.wr-hero::after{
-  content:""; position:absolute; left:0; right:0; bottom:-1px; height:80px; z-index:0;
-  background: linear-gradient(180deg, transparent, var(--bg)); /* fade to page */
-}
-/* Responsive: stack on small screens */
-@media (max-width: 800px){
-  .hero-grid{
-    grid-template-columns: 1fr;
-    gap:1.25rem;
-    text-align:center;
-  }
-  .side-caption.left,
-  .side-caption.right{
-    justify-self:center; text-align:center;
-  }
-  .side-caption.right{ order:3; }
-}
 
 /* ABOUT ME */
 .about-me {
@@ -142,10 +67,10 @@ html {
   max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap; /* stacks nicely on mobile */
-  position:relative; 
-  z-index:2; 
+  position:relative;
+  z-index:2;
   background: var(--bg);
-  scroll-margin-top: 64px; 
+  scroll-margin-top: 64px;
   overflow: hidden;
   font-family:  "Raleway", sans-serif;
 }
@@ -175,10 +100,19 @@ html {
   line-height: 1.6;
 }
 
-.introduction-text h1 {
+.about-eyebrow {
   margin: 0;
-  font-size: 30px;
-  font-weight: 600;
+  font-size: clamp(11px, 1.2vw, 13px);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.about-greeting {
+  margin: 8px 0 4px;
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: var(--fg);
 }
 
 .introduction-text p {
@@ -195,33 +129,68 @@ html {
   .introduction-text {
     align-items: center;
   }
+  .about-cta-row {
+    justify-content: center;
+  }
+}
+
+.about-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .about-btn {
-  margin-top: 10px;
-  width: 100%;
-  display: block;
-  padding: 0.75rem 1.5rem;
+  display: inline-block;
+  padding: 0.65rem 1.4rem;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: transparent;
   color: var(--fg);
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.95rem;
   letter-spacing: .05em;
   cursor: pointer;
   transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .about-btn:hover {
   background: var(--acc);
   border-color: var(--acc);
-  color: #000; /* pops on hover */
+  color: #000;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
 .about-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.about-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.about-icon-btn:hover {
+  border-color: var(--acc);
+  color: var(--fg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.about-icon-btn:active {
   transform: translateY(0);
   box-shadow: none;
 }
@@ -310,6 +279,7 @@ html {
   display:grid;
   gap: 28px;
   grid-template-columns: repeat(1, minmax(0,1fr));
+  align-items: stretch;
   position: relative; z-index: 1;
 }
 @media (min-width: 760px){
@@ -327,6 +297,9 @@ html {
   overflow: clip;
   transition: transform .18s ease, border-color .2s ease, box-shadow .18s ease;
   will-change: transform;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .project-wrap:hover{
   transform: translateY(-3px);
@@ -350,36 +323,65 @@ html {
 .project-card{
   display:flex; flex-direction:column; height:100%;
 }
-/* remove the grey panel around previews */
 .project-card .thumb{
   background: transparent;
-  padding: 20px;
-  box-shadow: none; /* removes the thin inner line */
+  padding: 0;
   width: 100%;
-  aspect-ratio: 16 / 10;   /* pick your ratio */
-  border-radius: 12px;
-  overflow: hidden;        /* clip overflow & rounded corners */
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 0;
 }
 
 .project-card .thumb img{
   width: 100%;
   height: 100%;
-  object-fit: cover;       /* fills box, crops if needed */
-  border-radius: 10px;
+  object-fit: cover;
+  border-radius: 0;
   display: block;
+  transition: transform .35s ease;
 }
 
-
-/* optional: consistent height + full-bleed fill
-.project-card .thumb{ aspect-ratio: 16/10; }
-.project-card .thumb img{ height: 100%; object-fit: cover; }
-*/
+.project-wrap:hover .thumb img {
+  transform: scale(1.04);
+}
+.thumb-placeholder{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklab, var(--bg) 80%, var(--acc) 8%);
+  border-radius: 0;
+  border-bottom: 1px dashed var(--line);
+}
+.thumb-placeholder-label{
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-family: "Raleway", sans-serif;
+  text-align: center;
+  padding: 0 16px;
+}
 
 
 .project-card .body{ padding:16px 16px 20px; display:flex; flex-direction:column; gap:8px; }
 .project-header{ display:flex; align-items:baseline; gap:10px; justify-content:space-between; }
-.project-title{ color:var(--fg); font-weight:400; letter-spacing:.02em; text-transform:uppercase; font-size:18px; }
+.project-title{ color:var(--fg); font-weight:600; letter-spacing:.02em; text-transform:uppercase; font-size:18px; }
 .project-year{ color:var(--muted); font-variant-numeric: tabular-nums; }
+.project-category-badge {
+  font-size: 0.7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cat-software { border-color: color-mix(in oklab, #6EE7F9 40%, var(--line)); color: color-mix(in oklab, #6EE7F9 70%, var(--muted)); }
+.cat-hardware { border-color: color-mix(in oklab, var(--acc) 50%, var(--line)); color: var(--muted); }
+.cat-research { border-color: color-mix(in oklab, #a5b4fc 40%, var(--line)); color: color-mix(in oklab, #a5b4fc 70%, var(--muted)); }
 .project-tech{ color:var(--muted); font-weight:600; letter-spacing:.02em; }
 .project-description{ color:var(--fg); opacity:.9; }
 .actions{ margin-top:auto; }
@@ -392,7 +394,23 @@ html {
 .project-long-description:hover{
   transform: translateY(-1px);
   border-color: color-mix(in oklab, var(--acc) 40%, var(--line));
-  justify-content: left;
+}
+.project-github-link {
+  display: inline-block;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: inherit;
+  font-family: inherit;
+  transition: border-color .2s ease, color .2s ease;
+  white-space: nowrap;
+}
+.project-github-link:hover {
+  border-color: color-mix(in oklab, var(--acc) 40%, var(--line));
+  color: var(--fg);
 }
 
 /* Modal */
@@ -409,12 +427,13 @@ html {
   background: color-mix(in oklab, var(--bg) 92%, black 8%);
   border:1px solid var(--line);
   border-radius:18px; box-shadow:0 16px 48px rgba(0,0,0,.45);
-  padding: 75px 75px 36px; 
+  padding: 75px 75px 36px;
   animation: popIn .16s ease-out;
 }
-.modal-head{ display:flex; justify-content:center; align-items:center; gap:12px; }
+.modal-head{ display:flex; justify-content:center; align-items:center; position:relative; padding:0 40px; }
 .modal-head h3{ color:var(--fg); font-weight:800; text-align:center;letter-spacing:.03em; text-transform:uppercase; margin:0; }
 .modal-close{
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
   border:1px solid var(--line); background:transparent; color:var(--fg);
   border-radius:10px; padding:6px 10px; font-size:16px; line-height:1;
 }
@@ -461,6 +480,8 @@ html {
   margin-top: 1rem;
   display: flex;
   justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .modal-actions {
@@ -529,29 +550,6 @@ html {
 .skill-list{ list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .skill-name{ color: var(--fg); font-weight: 600; }
 
-.skill-bar{
-  position: relative;
-  height: 8px;
-  background: color-mix(in oklab, var(--bg) 85%, black 15%);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  overflow: hidden;
-  margin-top: 6px;
-}
-.skill-bar > span{
-  display: block;
-  height: 100%;
-  width: 0; /* animated to % via inline style */
-  background: linear-gradient(90deg, var(--acc), #fff);
-  box-shadow: 0 0 12px color-mix(in oklab, var(--acc) 35%, transparent);
-  transition: width .8s cubic-bezier(.22,1,.36,1);
-}
-
-.skill-meta{
-  color: var(--muted);
-  font-size: .85rem;
-  margin-top: 6px;
-}
 
 /* Skills section layout (2 big cards per row like the screenshot) */
 .skills-sec{
@@ -561,21 +559,21 @@ html {
   margin: 0 auto;
   padding: 64px 20px 96px;
   font-family: "Raleway", sans-serif;
-  position:relative; 
-  overflow:hidden; 
+  position:relative;
+  overflow:hidden;
 }
 .skills-title{
   text-align: center;
   padding: 10px;
   font-size:20px;
-  position:relative; 
+  position:relative;
   z-index:2;
 }
 .skills-grid{
   display: grid;
   gap: 28px;
   grid-template-columns: 1fr;
-  position:relative; 
+  position:relative;
   z-index:2;
 }
 @media (min-width: 980px){
@@ -702,6 +700,28 @@ html {
 .tl-blurb { opacity: .85; margin: 6px 0; }
 .tl-location { opacity: .8; margin: 2px 0 8px; }
 .tl-role { font-weight: 600; }
+.tl-bullets {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tl-bullets li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.tl-bullets li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: color-mix(in oklab, var(--acc) 70%, var(--muted));
+  font-size: 0.75rem;
+}
 
 /* Clear floats */
 .tl-item::after { content: ""; display: table; clear: both; }
@@ -721,7 +741,7 @@ html {
   display: flex;
   flex-direction: row;
   align-items: center;
-  
+
 }
 
 /* CONTACT SECTION */
@@ -748,7 +768,21 @@ html {
 .contact-subtitle {
   font-size: 16px;
   opacity: 0.85;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+}
+.contact-email {
+  display: inline-block;
+  margin-bottom: 36px;
+  font-family: "Raleway", sans-serif;
+  font-size: clamp(14px, 1.8vw, 18px);
+  letter-spacing: .06em;
+  color: var(--acc);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.contact-email:hover {
+  color: var(--fg);
+  border-color: var(--fg);
 }
 
 .contact-info {
@@ -830,24 +864,16 @@ html {
 }
 
 /* ─── ANIMATION PERFORMANCE FIXES ─── */
-/*
- * Problem: large translateX/Y values (160px, 48px) combined with
- * opacity changes cause the browser to repaint on every frame.
- * Fix: force GPU compositing on every parallax container so the
- * browser only composites — never repaints.
- */
 .about-me,
 .projects-sec,
 .skills-sec,
 .timeline-sec,
 .contact-section {
-  /* creates a new stacking context, promotes to GPU layer */
   isolation: isolate;
   transform: translateZ(0);
 }
 
-/* Remove the blanket will-change on all AboutMe children — it was
-   over-promoting and fighting the parallax library */
+/* Remove the blanket will-change on all AboutMe children */
 .about-me * {
   will-change: auto;
 }
@@ -861,7 +887,7 @@ html {
   will-change: transform, opacity;
 }
 
-/* Prevent layout thrash during scroll: lock image dimensions */
+/* Prevent layout thrash during scroll */
 .main-pic,
 .project-card .thumb img {
   transform: translateZ(0);
@@ -871,7 +897,6 @@ html {
 /* Smoother scroll overall */
 html {
   scroll-behavior: smooth;
-  /* sub-pixel rendering on retina */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

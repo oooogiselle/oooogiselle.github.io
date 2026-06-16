@@ -11,7 +11,7 @@ export const skills = [
       { name: "CSS", level: "Advanced" },
       { name: "Python", level: "Advanced" },
       { name: "VHDL", level: "Advanced" },
-      { name: "SQL", level: "Basic"},
+      { name: "SQL", level: "Advanced"},
       { name: "R", level:"Basic"},
       { name: "Kotlin", level:"Basic"},
 

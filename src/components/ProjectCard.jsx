@@ -8,15 +8,26 @@ export default function ProjectCard({ item }) {
   return (
     <>
       <div className="project-card">
-        {item.thumb && (
-          <div className="thumb">
+        <div className="thumb">
+          {item.thumb ? (
             <img src={item.thumb} alt={item.title} loading="lazy" />
-          </div>
-        )}
+          ) : (
+            <div className="thumb-placeholder" aria-hidden="true">
+              <span className="thumb-placeholder-label">{item.tech}</span>
+            </div>
+          )}
+        </div>
         <div className="body">
           <div className="project-header">
             <h3 className="project-title">{item.title}</h3>
-            {item.year && <span className="project-year">{item.year}</span>}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+              {item.year && <span className="project-year">{item.year}</span>}
+              {item.category && (
+                <span className={`project-category-badge cat-${item.category.toLowerCase()}`}>
+                  {item.category}
+                </span>
+              )}
+            </div>
           </div>
           <p className="project-tech">{item.tech}</p>
           <div className="actions">
@@ -28,6 +39,16 @@ export default function ProjectCard({ item }) {
             >
               View Project →
             </button>
+            {item.github && (
+              <a
+                className="project-github-link"
+                href={item.github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub →
+              </a>
+            )}
           </div>
         </div>
       </div>

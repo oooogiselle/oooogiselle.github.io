@@ -1,6 +1,8 @@
 // src/components/AboutMe.jsx
 import { useLayoutEffect, useRef, useState } from "react";
 import { Parallax } from "react-scroll-parallax";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import aboutMe from "../../aboutme.JPG";
 
 export default function AboutMe() {
@@ -56,18 +58,32 @@ export default function AboutMe() {
         style={{ flex: 1, minWidth: 320 }}
       >
         <div className="introduction-text">
-          <h1>Dartmouth College | CS Modified with Engineering</h1>
+          <p className="about-eyebrow">Dartmouth College · CS minor in Engineering</p>
+          <h2 className="about-greeting">Hi, I'm Giselle.</h2>
           <p>
-            Hi, I'm Giselle — a junior at Dartmouth building at the intersection of
-            software, hardware, and design. Currently an Engineering Intern at Siemens EDA,
-            I've also done FPGA work building a VGA Tamagotchi game from scratch in VHDL,
-            researched ionospheric data at Lynch Rocket Lab, and built full-stack apps
-            used by real people.
+            I'm an undergrad at Dartmouth studying Computer Science and Computer
+            Engineering. I'm drawn to the space where deep engineering meets real
+            design — building things that work under the hood <em>and</em> feel good
+            to use, instead of trading one for the other.
           </p>
           <p>
-            Outside of tech, I perform with Sheba Dance Troupe, run, travel, and spend
-            time in the Makerspace and the Ceramics Studio.
-            I care about building things that are functional, beautiful, and actually fun to use.
+            You can see it in my <a href="#projects">projects</a>: a clinical AI
+            chatbot that pulls live patient data into context to make rare-disease
+            information actually navigable; a course-registration marketplace modeled
+            like a stock exchange, down to the price charts and bid/ask feed; a
+            Tamagotchi game I built straight onto an FPGA in VHDL. The throughline is
+            taking a hard technical problem and making something people can actually
+            use on top of it.
+          </p>
+          <p>
+            Right now I'm focused on applied AI, full-stack product work, and getting
+            sharper at frontend craft and UI/UX. I'm currently a SWE intern at Visa
+            and a full-stack developer at DALI Lab.
+          </p>
+          <p>
+            When I'm not building, you'll find me performing with Sheba Dance Troupe,
+            training for a half marathon, or in the ceramics studio. Ask me about
+            dance, running, ceramics, or where to travel next :)
           </p>
           <Parallax
             startScroll={range.start}
@@ -77,7 +93,28 @@ export default function AboutMe() {
             easing="easeOutCubic"
             shouldAlwaysCompleteAnimation
           >
-            <a href="#contact" className="about-btn">Say Hi</a>
+            <div className="about-cta-row">
+              <a href="#contact" className="about-btn">Say Hi</a>
+              <a href="#projects" className="about-btn">See Projects</a>
+              <a
+                href="https://github.com/oooogiselle"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-icon-btn"
+                aria-label="GitHub"
+              >
+                <GitHubIcon fontSize="small" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/giselle-wu-47363b242/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-icon-btn"
+                aria-label="LinkedIn"
+              >
+                <LinkedInIcon fontSize="small" />
+              </a>
+            </div>
           </Parallax>
         </div>
       </Parallax>

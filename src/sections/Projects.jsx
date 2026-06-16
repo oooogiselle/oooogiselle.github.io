@@ -79,6 +79,7 @@ export default function Projects() {
           >
             <motion.div
               className="project-wrap"
+              style={{ height: "100%" }}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}

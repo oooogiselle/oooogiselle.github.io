@@ -8,8 +8,11 @@ export default function Contact() {
       <div className="contact-content">
         <h3 className="contact-title">Get in touch</h3>
         <p className="contact-subtitle">
-          I’d love to connect! Feel free to reach out by email, or find me on LinkedIn and GitHub.
+          Open to new grad roles, research opportunities, and interesting projects.
         </p>
+        <a href="mailto:giselle.siqi.wu@gmail.com" className="contact-email">
+          giselle.siqi.wu@gmail.com
+        </a>
         <div className="contact-info">
           <a
             href="mailto:giselle.siqi.wu@gmail.com"
