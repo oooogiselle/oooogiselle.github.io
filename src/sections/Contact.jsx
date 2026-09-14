@@ -1,6 +1,4 @@
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import EmailIcon from '@mui/icons-material/Email';
-import GitHubIcon from '@mui/icons-material/GitHub';
+import { EmailIcon, GitHubIcon, LinkedInIcon } from "../components/icons";
 
 export default function Contact() {
   return (
@@ -8,7 +6,7 @@ export default function Contact() {
       <div className="contact-content">
         <h3 className="contact-title">Get in touch</h3>
         <p className="contact-subtitle">
-          Open to new grad roles, research opportunities, and interesting projects.
+          Looking for new grad roles where the problem arrives badly defined — forward deployed engineering, applied AI, early product.
         </p>
         <a href="mailto:giselle.siqi.wu@gmail.com" className="contact-email">
           giselle.siqi.wu@gmail.com
@@ -20,7 +18,7 @@ export default function Contact() {
             rel="noopener noreferrer"
             aria-label="Email"
           >
-            <EmailIcon fontSize="large" />
+            <EmailIcon size="large" />
           </a>
           <a
             href="https://www.linkedin.com/in/giselle-wu-47363b242/"
@@ -28,7 +26,7 @@ export default function Contact() {
             rel="noopener noreferrer"
             aria-label="LinkedIn"
           >
-            <LinkedInIcon fontSize="large" />
+            <LinkedInIcon size="large" />
           </a>
           <a
             href="https://github.com/oooogiselle"
@@ -36,7 +34,7 @@ export default function Contact() {
             rel="noopener noreferrer"
             aria-label="GitHub"
           >
-            <GitHubIcon fontSize="large" />
+            <GitHubIcon size="large" />
           </a>
         </div>
       </div>

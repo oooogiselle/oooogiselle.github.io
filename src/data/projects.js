@@ -7,7 +7,7 @@ export const projects = [
     year: "2026",
     category: "Software",
     description: "A full-stack marketplace web app where Dartmouth students can buy and sell course enrollment spots using virtual currency.\n\nBuilt a normalized MySQL relational database to model users, listings, and transactions, a Flask REST API backend with full CRUD endpoints and session-based auth, and a React frontend with real-time listing updates and purchase flow.\n\nDesigned around clean separation of frontend and backend concerns with a well-defined API contract.",
-    thumb: "/dartbid.png",
+    thumb: "/dartbid.webp",
     github: "https://github.com/oooogiselle/dartbid-frontend",
   },
   {
@@ -18,7 +18,7 @@ export const projects = [
     year: "2026",
     category: "Software",
     description: "A full-stack AI-powered travel planner built while traveling abroad.\n\nUsers can search destinations, get AI-generated itineraries via Gemini, discover nearby places with Foursquare, find flights through Amadeus, and visualize everything on an interactive Mapbox map. Auth and data persistence handled via Firebase Firestore.\n\nDeployed on Render.",
-    thumb: "/tripplanner.png",
+    thumb: "/tripplanner.webp",
     github: "https://github.com/oooogiselle/travel-planner-frontend",
   },
   {
@@ -29,7 +29,7 @@ export const projects = [
     year: "2025",
     category: "Hardware",
     description: "A fun, interactive spin on the classic Tamagotchi game where your \"pet\" is actually a rock.\n\nBuilt on the Basys3 FPGA board. Using pushbutton inputs, you can feed, pet, revive, or quit — and the rock responds with moods like Happy, Bored, Mad, Sad, or Dead. Each state is displayed with custom BRAM sprites on a VGA monitor.\n\nCheck out the GitHub project for more details!",
-    thumb: "/pet_rock.jpg",
+    thumb: "/pet_rock.webp",
     github: "https://github.com/oooogiselle/Pet_Rock_VGA",
     paper: "/pet_rock_report.pdf",
     video: "https://www.youtube.com/shorts/jfZMORfsHPw",
@@ -42,7 +42,7 @@ export const projects = [
     year: "2025",
     category: "Software",
     description: "A social music platform that helps you discover, compare, and connect with friends through shared taste.\n\nDiscover new tracks from a personalized feed, express your taste with customizable profile tiles, and see friends and events on an interactive map — then connect through shared artists, genres, and vibes.\n\nCheck out the code on GitHub to learn more.",
-    thumb: "/harmonize.jpg",
+    thumb: "/harmonize.webp",
     github: "https://github.com/oooogiselle/harmonize_frontend",
   },
   {
@@ -53,7 +53,7 @@ export const projects = [
     year: "2025",
     category: "Software",
     description: "NLP research comparing K-beauty vs. U.S. skincare brands across Reddit and Instagram — what brands say vs. what people actually feel.\n\nWe analyzed 10 brands using embeddings, sentiment analysis, and topic modeling. Results show stronger semantic alignment than lexical, more positive branded posts, and K-beauty's ingredient focus vs. U.S. identity-driven messaging.",
-    thumb: "/skinfluence.png",
+    thumb: "/skinfluence.webp",
     github: "https://github.com/oooogiselle/Skinfluence",
   },
   {
@@ -63,7 +63,7 @@ export const projects = [
     year: "2025",
     category: "Hardware",
     description: "A mechanical walking dinosaur built using a SolidWorks-modeled four-bar linkage.\n\nI designed, fabricated, and tested 15+ custom parts via 3D printing and laser cutting, resolved all interferences, and achieved smooth repeatable locomotion with 100% stability over 20+ trials.",
-    thumb: "/dino.JPG",
+    thumb: "/dino.webp",
     isometric: "/dino-isometric.pdf",
   },
   {
@@ -73,7 +73,7 @@ export const projects = [
     year: "2025",
     category: "Software",
     description: "A multiplayer Rogue-inspired game with a C client–server architecture. The server tracks the world; clients render only each player's field-of-view (fog-of-war). Win by collecting the most gold before all nuggets are gone.",
-    thumb: "/nugget.jpg",
+    thumb: "/nugget.webp",
     github: "https://github.com/oooogiselle/nuggets-group-10",
   },
   {
@@ -94,7 +94,7 @@ export const projects = [
     year: "2024",
     category: "Software",
     description: "Click any region on your webcam feed and the program automatically finds all regions of similar color and repaints them — playful and interactive.\n\nBuilt in Java using a region-growing flood-fill algorithm with BFS, BufferedImage for real-time capture, RGB similarity thresholds for region detection, and randomized recoloring for visualization.",
-    thumb: "/webcam.jpg",
+    thumb: "/webcam.webp",
     github: "https://github.com/oooogiselle/webcam_based_painter",
   },
 ];

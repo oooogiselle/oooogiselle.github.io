@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 
 export default function Nav() {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("gw-theme") ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    // light is the site's default look; dark is opt-in via the toggle
+    return localStorage.getItem("gw-theme") || "light";
   });
 
   useEffect(() => {
@@ -12,14 +12,22 @@ export default function Nav() {
     localStorage.setItem("gw-theme", theme);
   }, [theme]);
 
+  // the terminal's `theme` command routes through here so both stay in sync
+  useEffect(() => {
+    const flip = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+    window.addEventListener("gw-theme-toggle", flip);
+    return () => window.removeEventListener("gw-theme-toggle", flip);
+  }, []);
+
   return (
     <header className="wr-nav">
-      <a className="brand" href="#top">HOME</a>
+      <a className="brand" href="#top">giselle wu</a>
       <nav>
-        <a href="#projects">WORKS</a>
-        <a href="#about">ABOUT</a>
-        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">RESUME</a>
-        <a href="#contact">CONTACT</a>
+        <a href="#work">work</a>
+        <a href="#about">about</a>
+        <a href="#experience">experience</a>
+        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">resume</a>
+        <a href="#contact">contact</a>
       </nav>
       <button
         className="theme-toggle"

@@ -1,16 +1,32 @@
 // src/components/ProjectCard.jsx
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { GearIcon } from "./icons";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export default function ProjectCard({ item }) {
   const [open, setOpen] = useState(false);
+  // stable identity so the modal's effect doesn't re-run (and re-lock scroll)
+  // every time this card happens to re-render
+  const close = useCallback(() => setOpen(false), []);
 
   return (
     <>
       <div className="project-card">
         <div className="thumb">
           {item.thumb ? (
-            <img src={item.thumb} alt={item.title} loading="lazy" />
+            <img
+              src={item.thumb}
+              alt={item.title}
+              /* thumbs are pre-cropped to the 16/10 box the CSS renders them in,
+                 so the browser reserves exact space and nothing shifts on load */
+              width="840"
+              height="525"
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <div className="thumb-placeholder" aria-hidden="true">
               <span className="thumb-placeholder-label">{item.tech}</span>
@@ -54,21 +70,57 @@ export default function ProjectCard({ item }) {
       </div>
 
       {open && (
-        <ProjectModal
-          id={`proj-${item.id}-modal`}
-          item={item}
-          onClose={() => setOpen(false)}
-        />
+        <ProjectModal id={`proj-${item.id}-modal`} item={item} onClose={close} />
       )}
     </>
   );
 }
 
 function ProjectModal({ id, item, onClose }) {
+  const panelRef = useRef(null);
+  const closeRef = useRef(null);
+
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const opener = document.activeElement;
+
+    // Lock the page behind the dialog. Padding compensates for the scrollbar
+    // we just removed, so the page doesn't jump sideways as the modal opens.
+    const gutter = window.innerWidth - document.documentElement.clientWidth;
+    const prevOverflow = document.body.style.overflow;
+    const prevPadding = document.body.style.paddingRight;
+    document.body.style.overflow = "hidden";
+    if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
+
+    closeRef.current?.focus();
+
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      // keep Tab inside the dialog
+      const nodes = panelRef.current?.querySelectorAll(FOCUSABLE);
+      if (!nodes?.length) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPadding;
+      // send focus back to the card button that opened this
+      if (opener instanceof HTMLElement) opener.focus();
+    };
   }, [onClose]);
 
   return createPortal(
@@ -79,6 +131,7 @@ function ProjectModal({ id, item, onClose }) {
         aria-modal="true"
         aria-labelledby={`${id}-title`}
         id={id}
+        ref={panelRef}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-head">
@@ -87,7 +140,7 @@ function ProjectModal({ id, item, onClose }) {
             className="modal-close"
             onClick={onClose}
             aria-label="Close project details"
-            autoFocus
+            ref={closeRef}
           >
             ✕
           </button>
@@ -108,7 +161,7 @@ function ProjectModal({ id, item, onClose }) {
 
         {item.techLong && (
           <div className="modal-techlong">
-            <i className="fi fi-rs-settings" aria-hidden="true"></i>
+            <GearIcon size="small" />
             <p>{item.techLong}</p>
           </div>
         )}
