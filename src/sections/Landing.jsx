@@ -4,6 +4,7 @@
 //
 // The terminal is optional by construction — every destination it reaches is
 // also one click away on a card, so a reviewer who won't type loses nothing.
+import { useCallback, useState } from "react";
 import { GitHubIcon, LinkedInIcon, EmailIcon } from "../components/icons";
 import Terminal from "../components/Terminal";
 import { caseStudies } from "../data/caseStudies";
@@ -19,6 +20,11 @@ const CARDS = [
 ];
 
 export default function Landing() {
+  // Once a command has run, the intro folds away and the terminal takes the
+  // whole panel. `clear`, Ctrl+L or Escape brings the intro back.
+  const [shell, setShell] = useState(false);
+  const onShell = useCallback((on) => setShell(on), []);
+
   return (
     <section className="landing" id="top">
       <div className="landing-col">
@@ -28,9 +34,10 @@ export default function Landing() {
               <i /><i /><i />
             </span>
             <span className="window-path">~/giselle-wu</span>
+            {shell && <span className="window-hint">esc to go back</span>}
           </div>
 
-          <div className="window-body">
+          <div className={`window-body ${shell ? "is-shell" : ""}`}>
             <div className="window-intro">
             <h1 className="hero-lede">
               <span>Engineer. Creator.</span>
@@ -45,15 +52,15 @@ export default function Landing() {
               <p>
                 I'm drawn to the space where technology meets people, figuring out what
                 someone actually needs, then building it. I've chased that through
-                internships and personal projects. I'm currently a developer at DALI
-                Lab, and I spent this past summer interning at Visa, after a term at
-                Siemens EDA.
+                internships and personal projects. I'm currently a developer at{" "}
+                <strong>DALI Lab</strong>, and I spent this past summer interning at{" "}
+                <strong>Visa</strong>, after a term at <strong>Siemens EDA</strong>.
               </p>
             </div>
 
             </div>
 
-            <Terminal />
+            <Terminal onShell={onShell} />
           </div>
         </div>
 

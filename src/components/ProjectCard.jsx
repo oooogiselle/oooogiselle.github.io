@@ -28,44 +28,44 @@ export default function ProjectCard({ item }) {
               decoding="async"
             />
           ) : (
-            <div className="thumb-placeholder" aria-hidden="true">
-              <span className="thumb-placeholder-label">{item.tech}</span>
-            </div>
+            /* No screenshot for this one. An empty recessed band reads as a
+               deliberate blank; repeating the tech string here just said the
+               same thing twice, two lines apart. */
+            <div className="thumb-placeholder" aria-hidden="true" />
           )}
         </div>
         <div className="body">
+          {/* The title is the control that opens the card — a reviewer clicks
+              the name of the thing, not a button labelled after the action.
+              It also removes nine identical buttons from one grid. */}
           <div className="project-header">
-            <h3 className="project-title">{item.title}</h3>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-              {item.year && <span className="project-year">{item.year}</span>}
-              {item.category && (
-                <span className={`project-category-badge cat-${item.category.toLowerCase()}`}>
-                  {item.category}
-                </span>
-              )}
-            </div>
-          </div>
-          <p className="project-tech">{item.tech}</p>
-          <div className="actions">
-            <button
-              className="project-long-description"
-              onClick={() => setOpen(true)}
-              aria-haspopup="dialog"
-              aria-controls={`proj-${item.id}-modal`}
-            >
-              View Project →
-            </button>
-            {item.github && (
-              <a
-                className="project-github-link"
-                href={item.github}
-                target="_blank"
-                rel="noopener noreferrer"
+            <h3 className="project-title">
+              <button
+                className="project-open"
+                onClick={() => setOpen(true)}
+                aria-haspopup="dialog"
+                aria-controls={`proj-${item.id}-modal`}
               >
-                GitHub →
-              </a>
-            )}
+                {item.title}
+              </button>
+            </h3>
+            {item.year && <span className="project-year">{item.year}</span>}
           </div>
+
+          {item.summary && <p className="project-summary">{item.summary}</p>}
+
+          <p className="project-tech">{item.tech}</p>
+
+          {item.github && (
+            <a
+              className="project-github-link"
+              href={item.github}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          )}
         </div>
       </div>
 
@@ -146,6 +146,19 @@ function ProjectModal({ id, item, onClose }) {
           </button>
         </div>
 
+        {item.thumb && (
+          <figure className="modal-figure">
+            <img
+              src={item.thumb}
+              alt={item.title}
+              width="840"
+              height="525"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        )}
+
         <div className="modal-meta">
           {item.year && <span>{item.year}</span>}
           {item.category && <span>• {item.category}</span>}
@@ -170,22 +183,22 @@ function ProjectModal({ id, item, onClose }) {
           <div className="modal-actions">
             {item.github && (
               <a className="modal-btn" href={item.github} target="_blank" rel="noopener noreferrer">
-                View on GitHub →
+                GitHub
               </a>
             )}
             {item.paper && (
               <a className="modal-btn" href={item.paper} target="_blank" rel="noopener noreferrer">
-                View Paper →
+                Paper
               </a>
             )}
             {item.video && (
               <a className="modal-btn" href={item.video} target="_blank" rel="noopener noreferrer">
-                View Video →
+                Video
               </a>
             )}
             {item.isometric && (
               <a className="modal-btn" href={item.isometric} target="_blank" rel="noopener noreferrer">
-                View Blueprint →
+                Blueprint
               </a>
             )}
           </div>

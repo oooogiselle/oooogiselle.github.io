@@ -1,7 +1,10 @@
 // src/data/projects.js
+// `summary` is the one line the card shows: what the thing is, before anyone
+// clicks. `description` is the long version, and only the modal reads it.
 export const projects = [
   { id: 1,
     title: "DartBid",
+    summary: "A marketplace where Dartmouth students buy and sell course enrollment spots in virtual currency.",
     tech: "React • Flask • MySQL",
     techLong: "React, Flask (Python), MySQL, REST API, Vite, Render",
     year: "2026",
@@ -13,6 +16,7 @@ export const projects = [
   {
     id: 2,
     title: "TripPlan",
+    summary: "An AI travel planner — itineraries, flights and places on one map. Built while traveling abroad.",
     tech: "React • Gemini • Mapbox",
     techLong: "React, Express, Firebase Firestore, Google Gemini API, Amadeus API, Foursquare API, Mapbox, Render",
     year: "2026",
@@ -24,6 +28,7 @@ export const projects = [
   {
     id: 3,
     title: "VGA Pet Rock Game",
+    summary: "Tamagotchi on an FPGA: feed, pet or revive a rock that sulks back at you over VGA.",
     tech: "VHDL • RTL • VGA",
     techLong: "VHDL, RTL Design, VGA, Finite State Machines, Circuit Design, Timing Design",
     year: "2025",
@@ -37,6 +42,7 @@ export const projects = [
   {
     id: 4,
     title: "Harmonize",
+    summary: "A social music platform for discovering and comparing taste with friends.",
     tech: "React • Tailwind • MongoDB",
     techLong: "React + Vite • Tailwind • Zustand • React Router • Leaflet/Mapbox • three.js (R3F) • Express • MongoDB (Mongoose) • Spotify & Ticketmaster APIs",
     year: "2025",
@@ -48,6 +54,7 @@ export const projects = [
   {
     id: 5,
     title: "Skinfluence",
+    summary: "NLP research on K-beauty vs. U.S. skincare — what brands say against what people actually feel.",
     tech: "Pandas • Numpy • Vader",
     techLong: "Python (pandas, NumPy), scikit-learn (TF-IDF, LDA), sentence-transformers, NLTK, VADER, seaborn/matplotlib",
     year: "2025",
@@ -59,6 +66,7 @@ export const projects = [
   {
     id: 6,
     title: "Walking Dino",
+    summary: "A mechanical walking dinosaur driven by a SolidWorks four-bar linkage.",
     tech: "CAD • Kinematics • Laser Cutting",
     year: "2025",
     category: "Hardware",
@@ -69,6 +77,7 @@ export const projects = [
   {
     id: 7,
     title: "Nugget Game",
+    summary: "A multiplayer Rogue-inspired game in C: the server holds the world, clients see only their own view.",
     tech: "C • Client/Server • Visibility",
     year: "2025",
     category: "Software",
@@ -79,6 +88,7 @@ export const projects = [
   {
     id: 8,
     title: "OnCue",
+    summary: "An Android party game — spontaneous prompts, answered in real time.",
     tech: "Kotlin • Firebase • Jetpack Compose",
     techLong: "Kotlin, Jetpack Compose, Firebase Realtime Database, Firebase Auth, Android Studio",
     year: "2025",
@@ -90,6 +100,7 @@ export const projects = [
   {
     id: 9,
     title: "Webcam-based Painter",
+    summary: "Click a region of your webcam feed and every similar-colored region repaints itself.",
     tech: "Java • Algorithm • Image Segmentation",
     year: "2024",
     category: "Software",

@@ -18,22 +18,41 @@ const BANNER = [
   { kind: "out", text: "try 'ls' to see everything, or 'help' for the full list" },
 ];
 
-function scrollTo(hash) {
-  const el = document.querySelector(hash);
-  if (!el) return false;
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
+// Navigation is a hash change, exactly like clicking a nav card: App owns which
+// view that opens. The terminal never reaches for the DOM of another section.
+function go(hash) {
+  if (window.location.hash === hash) {
+    // same address twice still has to act like a command
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+  } else {
+    window.location.hash = hash;
+  }
   return true;
 }
 
-export default function Terminal() {
-  const [lines, setLines] = useState(BANNER);
+// `onShell` reports whether the shell is in use. The landing hands the whole
+// window over to the terminal once it is, because at a third of the panel a
+// `help` or an `ls` scrolls out of sight — and a reviewer should never have to
+// scroll inside a box to read what they just asked for.
+export default function Terminal({ onShell, compact = false, cwd = "~" }) {
+  const [lines, setLines] = useState(compact ? [] : BANNER);
   const [value, setValue] = useState("");
   const [history, setHistory] = useState([]);
   const [hIndex, setHIndex] = useState(-1);
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
 
-  const push = useCallback((...entries) => setLines((l) => [...l, ...entries]), []);
+  // A view has room for one line, so the compact shell keeps only the latest.
+  const push = useCallback(
+    (...entries) =>
+      setLines((l) => (compact ? entries.slice(-1) : [...l, ...entries])),
+    [compact]
+  );
+
+  // the banner is the resting state; anything past it means the shell is live
+  useEffect(() => {
+    if (!compact) onShell?.(lines.length > BANNER.length);
+  }, [lines, onShell, compact]);
 
   // keep the newest output in view
   useEffect(() => {
@@ -52,10 +71,17 @@ export default function Terminal() {
 
       switch (cmd.toLowerCase()) {
         case "help":
+          if (compact) {
+            push({
+              kind: "out",
+              text: "cd <section> · cd .. · open <project> · cat resume · theme",
+            });
+            break;
+          }
           push(
             { kind: "out", text: "ls                list everything" },
-            { kind: "out", text: "cd <section>      jump to a section" },
-            { kind: "out", text: "open <project>    jump to a case study" },
+            { kind: "out", text: "cd <section>      open a section ('cd ..' comes back)" },
+            { kind: "out", text: "open <project>    open a case study" },
             { kind: "out", text: "cat <file>        read about.md or resume" },
             { kind: "out", text: "theme             toggle light / dark" },
             { kind: "out", text: "clear             clear the screen" }
@@ -63,6 +89,15 @@ export default function Terminal() {
           break;
 
         case "ls":
+          if (compact) {
+            push({
+              kind: "out",
+              text: `sections: ${SECTIONS.map(([n]) => n).join(" ")} · work: ${caseStudies
+                .map((c) => c.id)
+                .join(" ")}`,
+            });
+            break;
+          }
           push({ kind: "accent", text: "sections/" });
           SECTIONS.forEach(([name, , hint]) =>
             push({ kind: "out", text: `  ${name.padEnd(12)} ${hint}` })
@@ -76,7 +111,10 @@ export default function Terminal() {
         case "cd": {
           const hit = SECTIONS.find(([name]) => name === arg);
           if (!arg) push({ kind: "out", text: "usage: cd <section>" });
-          else if (hit && scrollTo(hit[1]))
+          else if (arg === ".." || arg === "~" || arg === "/") {
+            go("#top");
+            push({ kind: "out", text: "→ ~/giselle-wu" });
+          } else if (hit && go(hit[1]))
             push({ kind: "out", text: `→ ${hit[0]}` });
           else push({ kind: "err", text: `no such section: ${arg}` });
           break;
@@ -87,7 +125,7 @@ export default function Terminal() {
             (c) => c.id === arg || c.name.toLowerCase().includes(arg)
           );
           if (!arg) push({ kind: "out", text: "usage: open <project>" });
-          else if (hit && scrollTo(`#${hit.id}`))
+          else if (hit && go(`#${hit.id}`))
             push({ kind: "out", text: `→ ${hit.name}` });
           else push({ kind: "err", text: `no such project: ${arg}` });
           break;
@@ -117,7 +155,7 @@ export default function Terminal() {
           break;
 
         case "clear":
-          setLines([]);
+          setLines(compact ? [] : BANNER);
           return;
 
         default:
@@ -127,7 +165,7 @@ export default function Terminal() {
           });
       }
     },
-    [push]
+    [push, compact]
   );
 
   const onKeyDown = (e) => {
@@ -166,9 +204,50 @@ export default function Terminal() {
     }
     if (e.key === "l" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      setLines([]);
+      setLines(compact ? [] : BANNER);
+      return;
+    }
+    if (e.key === "Escape") {
+      // the way back out of the shell, and the only Escape on the landing —
+      // App binds Escape to "return to the front page" only inside a view
+      e.preventDefault();
+      setLines(compact ? [] : BANNER);
+      setValue("");
     }
   };
+
+  const ps1 = `giselle@portfolio:${cwd}$`;
+
+  // The one-line shell every view carries, so `cd ..` is always available —
+  // landing on a page with no prompt left typing as a one-way trip.
+  if (compact) {
+    return (
+      <div
+        className="term term-compact"
+        onClick={() => inputRef.current?.focus()}
+        role="group"
+        aria-label="Terminal navigator"
+      >
+        <label className="term-prompt">
+          <span className="term-ps1" aria-hidden="true">{ps1}</span>
+          <input
+            ref={inputRef}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={onKeyDown}
+            aria-label="Type a command"
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck="false"
+          />
+        </label>
+        <p className="term-line term-compact-out" aria-live="polite">
+          {lines[0]?.text || "cd .. to go back · help"}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div

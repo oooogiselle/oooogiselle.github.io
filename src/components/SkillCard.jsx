@@ -4,14 +4,11 @@ export default function SkillCard({ item }) {
     <div className="skill-card">
       <h3 className="skill-category">{item.category}</h3>
 
-      <ul className="skill-list two-col">
+      <ul className="skill-list">
         {item.items.map((s) => (
           <li key={s.name} className="skill">
-            <span className="skill-icon" aria-hidden="true">✓</span>
-            <div className="skill-text">
-              <div className="skill-name">{s.name}</div>
-              <div className="skill-level">{s.level}</div>
-            </div>
+            <span className="skill-name">{s.name}</span>
+            {s.where && <span className="skill-where">{s.where}</span>}
           </li>
         ))}
       </ul>

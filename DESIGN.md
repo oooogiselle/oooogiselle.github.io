@@ -1,8 +1,30 @@
 # Design System — giselle wu portfolio
 
 **Terminal, done with restraint.** Terminal as a typographic and structural
-system, never a simulated shell. Navigation is ordinary links, scroll, and the
-back button. A reviewer must never type a command to reach the work.
+system, never a simulated shell. A reviewer must never type a command to reach
+the work.
+
+**The page does not scroll, and neither does a view.** The landing is the
+screen; every other section is a view you switch to from it, addressed by hash
+so ordinary links and the back button still work.
+
+**Every view fits one screen, with one deliberate exception: the archive.**
+Nine cards with pictures run ~240px past a screen and no amount of trimming
+closes that, so the archive pane scrolls — a window scrolling its own contents
+is still a page that doesn't. Everything else holds the rule.
+
+This is a design constraint, not an aspiration,
+and it is what sizes the type: at a 723px viewport — a normal laptop with
+browser chrome — all six views measure zero overflow. The tools, in order of
+preference: **more columns** (three for the roles, three for the archive), **one
+record at a time** (the work view's pager), **pairing metadata rows**, and only
+then type size. Below ~640px of viewport the content wins and the pane scrolls;
+that is the release valve, not the plan.
+
+Two traps when compacting: `body` sets `line-height: var(--ch)` — 24px — so
+every compact list inherits it until it sets its own leading; and **narrow
+columns can make a section taller**, because the text inside wraps (four skill
+columns measured deeper than two).
 
 ---
 
@@ -13,8 +35,14 @@ quiet.
 
 | Register | Face | Owns |
 |---|---|---|
-| **Mono** | JetBrains Mono | nav, name, section labels, metadata rows, file paths, tags, diffs, timestamps, buttons |
-| **Reading** | Source Serif 4 | case study prose, bio, timeline bullets, modal descriptions |
+| **Mono** | JetBrains Mono | nav, name, section labels, metadata rows, file paths, tags, diffs, timestamps, buttons, **everything inside the landing window** |
+| **Reading** | Source Serif 4 | case study prose, archive card lines, timeline bullets, modal descriptions |
+
+**The window is the exception, and it is a whole-object one.** The landing panel
+is a shell, so its headline and bio are set in mono like the terminal beneath
+them — one register from title bar to prompt. Set at `13.5px/1.72`, not the
+serif's size: mono is ~20% wider per character and goes dense without the extra
+leading. Outside that panel the rule stands.
 
 **Never set long prose in mono.** Mono is ~20% wider per character, so it eats
 vertical space and reads as padded past about two lines.
@@ -44,11 +72,17 @@ paragraph; everybody notices an unsnapped label.
 |---|---|---|
 | Name | `clamp(38px, 8vw, 76px)` / 700 / `-.045em` | mono |
 | Case name | `clamp(20px, 3vw, 27px)` / 700 | mono |
-| Lede | `clamp(19px, 2.2vw, 24px)` / 1.5 | serif |
+| Landing lede | `clamp(16px, 1.75vw, 20px)` / 1.22 / `-.035em` | mono |
+| Landing bio | `12.5px` / 1.7 | mono |
+| Terminal | `12px` / 1.6, hint `10.5px` | mono |
 | Prose | `17.5px` / 1.62 | serif |
 | Section label | `13px` / `.18em` / uppercase | mono |
-| Chrome + metadata | `12–12.5px` | mono |
+| Chrome + metadata | `11–12.5px` | mono |
 | Tag | `11.5px` | mono |
+
+The window's own scale sits a step below the page's: it is a panel of shell
+output, not a hero. Mono at display sizes also sets loose, hence the `-.035em`
+on the lede.
 
 ---
 
@@ -59,17 +93,23 @@ emphasis. **Three.** If a fourth is needed, something else is wrong.
 
 | Role | Light | Dark | Used for |
 |---|---|---|---|
-| Ground | `#FBF8F2` | `#1A1815` | page |
-| Sunk | `#F3EFE6` | `#232019` | diffs, recessed blocks |
-| Ink | `#1F1D1A` | `#EDE7DA` | headings, `+` lines |
-| Ink soft | `#4A463F` | `#B8B1A3` | body prose |
-| Line / firm | `#E0D9CC` / `#CFC6B5` | `#332F27` / `#464136` | rules, borders |
+| Ground | `#FFFFFF` | `#1A1815` | page |
+| Sunk | `#F1F5FA` | `#232019` | diffs, recessed blocks |
+| Ink | `#171B20` | `#EDE7DA` | headings, `+` lines |
+| Ink soft | `#454C56` | `#B8B1A3` | body prose |
+| Line / firm | `#E1E7EF` / `#C7D2DF` | `#332F27` / `#464136` | rules, borders |
 | **1 · interactive** | `#286983` | `#7FB4C9` | links, hovers, active |
-| **2 · metadata** | `#797593` | `#A9A3BE` | mono chrome, paths, `−` lines |
+| **2 · metadata** | `#6E6A88` | `#A9A3BE` | mono chrome, paths, `−` lines |
 | **3 · emphasis** | `#B4637A` | `#D9909F` | `❯` glyphs, `+` marker, lede rule |
 
-Warm paper, not white. Dark mode is a **warm low-contrast inverse** — never
-`#000`, never green on black.
+Light mode is **white**, with one exception: a single baby-blue wash across the
+first screen (`--bg-grad`, painted on `<body>`). Its stops are in **px, not %**, so
+the wash is sized to the first ~980px of the document and is fully gone by the time
+the work starts — the rest of the page is flat white. It is the only gradient on the
+site; do not add a second, and do not let it run under the case studies.
+
+Dark mode carries **no gradient** (`--bg-grad: none`) and stays a warm low-contrast
+inverse — never `#000`, never green on black.
 
 **Photographs are never desaturated.** No grayscale, no duotone, no
 colour-on-hover reveal. The palette's restraint is carried by the interface;
@@ -114,15 +154,44 @@ Rules:
   `❯` glyph in the emphasis accent: `❯ selected work`, `❯ archive`, `❯ stack`,
   `❯ experience`.
 - **Metadata renders as terminal output** — a `<dl>` with a fixed `13ch` label
-  column: org, role, dates, domain, status, stack, `not built`.
+  column: role (with org), dates, domain (with status), stack, `not built`.
+  Four rows, not six: org/role and domain/status each read as one fact, and the
+  two rows saved are most of what let a study fit a screen.
+- **One case study at a time.** The work view shows a pager of the three file
+  paths and renders the selected one; on a wide screen the study is two columns
+  — the record (metadata + diff) left, the prose right.
 - **File paths** identify case studies: `work/dali-lab/zebramd`.
+- **Archive cards** carry a cropped screenshot, a name, one serif line of what
+  the thing is, its stack, and a GitHub link. The image is a 104px band with
+  `object-fit: cover`, not a gallery tile — the full 16/10 frame at this column
+  width is 230px tall, and three rows of that is two screens. The whole picture
+  is in the modal. A project with no screenshot gets an empty recessed band. The name itself is the button that opens the
+  modal — nine identically boxed `View Project →` buttons in one grid was the
+  most templated element on the page, and a card that never says what the
+  project *does* asks a reviewer to click to find out.
+- **The stack section cites, it does not rate.** Each skill names the projects
+  it was used on (`React — DartBid, TripPlan, Harmonize, this site`). A
+  self-assigned level is a claim nobody can check, and the old ratings actively
+  contradicted the work above them — `Artificial Intelligence: Basic` sat below
+  three LLM case studies. A skill with nothing to point at shows just its name.
+- **The top bar has no boundary.** `.wr-nav::before` paints a full-bleed scrim
+  (the bar itself is trapped inside the 1120px measure) and both it and its
+  blur are faded out by a `mask-image` over the bottom third. No rule, no edge:
+  the landing's wash runs unbroken from the top of the page.
 - **Featured work sits above the bio.** Strongest evidence inside the 60 seconds
   a reviewer actually spends.
 - **Window panel** (`.window`) frames a block of content: a title bar carrying a
   file path, plus three monochrome dots. It is a frame, not a shell — nothing is
   typed into it and it never renders fake command output. The dots are
   deliberately **not** red/yellow/green; that would be three colours more than
-  the palette allows. Used once, on the landing.
+  the palette allows.
+- **Every view is a window.** The landing holds one; each section opens as one.
+  So `cd work` visibly *opens a window*, which is the right answer to "should a
+  command open a new window" — a real browser popup gets blocked, breaks the
+  back button, and is useless on a phone.
+- **The title bar carries the path and the way back**: `❮ ~/giselle-wu / archive`,
+  where the first half is the link home. One affordance, in the place a window
+  already puts its identity, rather than a separate back link above the panel.
 - **Terminal** (`.term`) is a real, typeable shell living at the foot of the landing
   window. It is **additive, never required** — every destination it reaches is also on
   a nav card, because a reviewer on a phone will not type. It does navigation only:
@@ -142,6 +211,15 @@ The original brief forbade typed navigation outright. That was overridden delibe
 the terminal is wanted. The constraint that survives, and that must hold:
 
 > **Nothing may be reachable only by typing.** The cards and top nav stay, always.
+
+With the page view-switched, this is load bearing rather than aspirational: a section
+that is not in the top bar or on a landing card is reachable by no other means. The bar
+carries all five views; `❮ ~/giselle-wu`, Escape, and the browser back button all
+return to the front page.
+
+Running a command hands the whole panel to the shell: the headline and bio fold away so
+output is read without scrolling inside a box, and `clear` / Ctrl+L / Escape fold them
+back. The window does not change size — the split inside it does.
 
 Still forbidden inside the terminal: joke commands, `sudo` gags, fake filesystem output,
 anything that pretends to do something it doesn't. Unknown input returns
@@ -168,7 +246,12 @@ These are the defaults, and they read as costume:
 
 ## 6. Motion
 
-One primitive: `Reveal` — fade and rise `12px`, once, on IntersectionObserver.
+One primitive, used **once**: `Reveal` — fade and rise `12px`, on
+IntersectionObserver — wraps the first case study and nothing else. Every
+section fading in as the reader reaches it is the default treatment, and it
+reads as one; the archive grid was the worst of it, replaying a nine-card
+stagger on every filter change. One entrance, then the page is simply there.
+
 No scroll-linked parallax; measured scroll ranges go stale whenever an image
 loads or a filtered grid changes height.
 
@@ -183,8 +266,10 @@ resting state in that block, or reduced-motion users get invisible content.
 
 ## 7. Accessibility
 
-- Contrast: ink on ground is ~14:1; the metadata accent is reserved for
-  ≥12.5px text and never carries meaning alone.
+- Contrast: ink on ground is ~14:1; the metadata accent clears AA at 5.2:1 on
+  the white ground and never carries meaning alone. It was `#797593`, which
+  measured 4.45:1 — under AA for normal text, and the terminal's chrome now
+  runs as small as 10.5px, so it was darkened rather than enlarged.
 - The diff's `−`/`+` signal is carried by **weight and position**, not color.
 - Focus is always visible: `2px` interactive-accent outline, `2px` offset.
 - Every image declares `width`/`height`; layout shift is zero by construction.

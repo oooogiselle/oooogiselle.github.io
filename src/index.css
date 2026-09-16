@@ -10,15 +10,23 @@
 
 :root,
 [data-theme="light"] {
-  --bg:        #FBF8F2;   /* warm paper */
-  --bg-sunk:   #F3EFE6;   /* recessed blocks: diffs, code */
-  --fg:        #1F1D1A;   /* ink */
-  --fg-soft:   #4A463F;   /* secondary prose */
-  --line:      #E0D9CC;
-  --line-firm: #CFC6B5;
+  --bg:        #FFFFFF;   /* white — the page is white first */
+  --bg-sunk:   #F1F5FA;   /* recessed blocks: diffs, code */
+  --fg:        #171B20;   /* ink */
+  --fg-soft:   #454C56;   /* secondary prose */
+  --line:      #E1E7EF;
+  --line-firm: #C7D2DF;
+
+  /* The only gradient on the site: a breath of baby blue over the first
+     screen, gone by the time the work starts. Stops are in px, not %, so
+     the wash never stretches with document height. */
+  --bg-grad:
+    radial-gradient(1300px 620px at 50% -120px,
+      rgba(170, 205, 244, .62) 0%, rgba(170, 205, 244, 0) 72%),
+    linear-gradient(180deg, #E9F1FC 0px, #F6FAFE 460px, #FFFFFF 980px);
 
   --int:   #286983;       /* 1 · interactive — links, buttons, active */
-  --meta:  #797593;       /* 2 · metadata — mono chrome, paths, removals */
+  --meta:  #6E6A88;       /* 2 · metadata — mono chrome, paths, removals */
   --emph:  #B4637A;       /* 3 · emphasis — used sparingly, once per view */
 
   --sel: color-mix(in oklab, var(--int) 18%, transparent);
@@ -38,6 +46,7 @@
 
 /* Warm, low-contrast inverse. Not #000, not green. */
 [data-theme="dark"] {
+  --bg-grad:   none;
   --bg:        #1A1815;
   --bg-sunk:   #232019;
   --fg:        #EDE7DA;
@@ -59,21 +68,27 @@
 
 html {
   margin: 0;
+  height: 100%;
   background: var(--bg);
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-padding-top: calc(var(--ch) * 3);
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--bg-grad);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% 1200px;
   color: var(--fg);
   font-family: var(--font-mono);
   font-size: 14px;
   line-height: var(--ch);
-  overflow-x: hidden;
+  /* The page itself never scrolls: the landing is the screen, and every other
+     section is a view inside `.view`, which does its own scrolling. */
+  height: 100%;
+  overflow: hidden;
 }
 
 ::selection { background: var(--sel); }
@@ -93,7 +108,50 @@ img { max-width: 100%; }
    with the hidden attribute would otherwise keep it on screen. */
 [hidden] { display: none !important; }
 
-.wr { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+/* the shell's height chain: html → body → #root → .wr. Miss one link and every
+   `height: 100%` below it silently collapses to auto and the page scrolls. */
+#root { height: 100%; }
+
+.wr {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── views ───
+   One section on screen at a time. `.view` is the only scroll container on the
+   page, so the top bar and the landing's single-screen lock hold no matter how
+   long the archive gets. */
+.view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* breathing room under the content — nothing sits on the bottom edge */
+  padding-bottom: var(--ch);
+}
+/* The landing is sized to its pane, so on any reasonable screen it is exactly
+   one screen and nothing scrolls. `auto`, not `hidden`, is the floor: on a
+   phone — or a very short window — the cards and links must still be
+   reachable, and clipping them would hide half the navigation. */
+.view--top { overflow-y: auto; }
+/* The archive is the single view that cannot fit: nine cards with pictures
+   run 240px past a screen, and the pictures earn their place. A window that
+   scrolls its own contents is still a page that doesn't. */
+.view--projects .projects-grid { scroll-margin-top: var(--ch); }
+
+/* the view's panel: same chrome as the landing's, opened by a command or a card */
+.view-window { margin-top: 8px; }
+.view-window-body { padding: calc(var(--ch) * .8) calc(var(--ch) * 1.1) calc(var(--ch) * .7); }
+.window-path-back { color: var(--meta); transition: color .15s ease; }
+.window-path-back:hover { color: var(--int); }
+.window-path-here { color: var(--fg); }
+/* the pane takes focus on a view change so the reader lands in the new view;
+   it is never tabbed to, so it needs no ring */
+.view:focus { outline: none; }
 
 .skip-link {
   position: absolute; left: 8px; top: -60px; z-index: 100;
@@ -105,15 +163,36 @@ img { max-width: 100%; }
 
 /* ─── nav ─── */
 .wr-nav {
-  position: sticky; top: 0; z-index: 50;
+  position: relative; z-index: 50;
+  flex-shrink: 0;
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px;
   height: calc(var(--ch) * 2.5);
   margin-bottom: calc(var(--ch) * 2);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in oklab, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
   font-size: 12.5px;
+}
+/* The bar lives inside `.wr`, so its own box stops at the 1120px measure.
+   The scrim and rule are painted by this full-bleed layer instead — a
+   container-width band would read as a white card sitting on the wash.
+   `overflow-x: hidden` on body keeps the 100vw bleed from adding scroll. */
+.wr-nav::before {
+  content: "";
+  position: absolute; z-index: -1;
+  top: 0; bottom: 0;
+  left: calc(50% - 50vw); right: calc(50% - 50vw);
+  background: color-mix(in oklab, var(--bg) 40%, transparent);
+  backdrop-filter: blur(14px);
+  /* No rule, no hard edge: the scrim and its blur fade out over the bottom
+     third of the bar, so the bar has no boundary against the page at all.
+     A border-bottom — or an unmasked scrim — reads as a white band sitting
+     on top of the wash. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+}
+/* Light mode keeps the scrim thin so the wash runs unbroken under the bar.
+   Dark mode has no wash to protect, so it takes a heavier one. */
+[data-theme="dark"] .wr-nav::before {
+  background: color-mix(in oklab, var(--bg) 82%, transparent);
 }
 .wr-nav .brand { color: var(--fg); font-weight: 700; letter-spacing: -.01em; }
 .wr-nav nav { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -123,15 +202,19 @@ img { max-width: 100%; }
 /* ─── hero ─── */
 .wr-hero { padding: calc(var(--ch) * 2) 0 calc(var(--ch) * 4); }
 
+/* Mono, like everything else inside the window: the panel is a shell, so its
+   text is its output. The rest of the page keeps the reading face — see
+   DESIGN.md §1 for where the register line now falls. */
 .hero-lede {
-  margin: 0 0 calc(var(--ch) * 1.25);
+  margin: 0 0 calc(var(--ch) * .9);
   max-width: var(--measure);
-  font-family: var(--font-read);
+  font-family: var(--font-mono);
   font-weight: 400;
-  font-size: clamp(20px, 2.4vw, 27px);
+  font-size: clamp(16px, 1.75vw, 20px);
   /* two stacked lines want tighter leading than a running paragraph */
-  line-height: 1.18;
-  letter-spacing: -.012em;
+  line-height: 1.22;
+  /* mono sets loose at display sizes; pull it back in */
+  letter-spacing: -.035em;
   color: var(--fg);
 }
 .hero-lede span,
@@ -142,7 +225,7 @@ img { max-width: 100%; }
   line-height: 1.25;
   margin-bottom: .1em;
 }
-.hero-lede strong { font-weight: 600; }
+.hero-lede strong { font-weight: 700; }
 
 /* affiliation table — strict character grid, label column fixed */
 .affil, .meta {
@@ -153,7 +236,8 @@ img { max-width: 100%; }
   display: grid;
   grid-template-columns: 13ch 1fr;
   gap: 0 12px;
-  padding: 6px 0;
+  line-height: 1.7;
+  padding: 4px 0;
   border-bottom: 1px solid var(--line);
 }
 .affil dt, .meta dt {
@@ -184,10 +268,12 @@ img { max-width: 100%; }
 .hero-jump a:hover { border-bottom-color: var(--int); }
 
 /* ─── sections ─── */
-.section { padding: calc(var(--ch) * 2.5) 0; }
+/* Inside a view window the panel already supplies the padding — a section that
+   adds its own is what pushed the archive back over a screen. */
+.section { padding: 0; }
 
 .sec-title {
-  margin: 0 0 calc(var(--ch) * 1.5);
+  margin: 0 0 12px;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 500;
@@ -200,11 +286,43 @@ img { max-width: 100%; }
 /* ─── case studies ─── */
 .case-list { display: grid; gap: calc(var(--ch) * 3); }
 
+/* the pager above carries the path, so the study itself starts at its name */
 .case {
-  padding-top: var(--ch);
+  padding-top: 14px;
   border-top: 2px solid var(--fg);
 }
-.case-head { margin-bottom: var(--ch); }
+
+/* Optional: a case study that has something shareable to show. Most don't —
+   internal tooling at a big company is not screenshottable — so the layout
+   must look finished without it, which is why it sits at the end of the prose
+   column rather than in a slot that gapes when empty. */
+.case-figure {
+  margin: var(--ch) 0 0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-sunk);
+}
+.case-figure img { display: block; width: 100%; height: auto; }
+
+.case-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--ch);
+}
+.case-switch-item {
+  line-height: 1.5;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--meta);
+  font-size: 11.5px;
+  transition: color .15s ease, border-color .15s ease;
+}
+.case-switch-item:hover { color: var(--int); border-color: var(--int); }
+.case-switch-item.is-active { color: var(--fg); border-color: var(--line-firm); background: var(--bg-sunk); }
+.case-head { margin-bottom: 14px; }
 .case-path {
   margin: 0 0 4px;
   color: var(--meta);
@@ -215,15 +333,24 @@ img { max-width: 100%; }
 .case-name {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: clamp(20px, 3vw, 27px);
+  font-size: clamp(19px, 2.4vw, 23px);
   font-weight: 700;
   letter-spacing: -.025em;
   line-height: 1.2;
 }
 
-.meta { margin-bottom: calc(var(--ch) * 1.25); }
+.meta { margin-bottom: 14px; }
 .meta-wide { grid-template-columns: 13ch 1fr; }
 .meta-wide dd { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* the one metadata value that is a destination, in the interactive accent */
+.meta-link {
+  color: var(--int);
+  border-bottom: 1px solid color-mix(in oklab, var(--int) 35%, transparent);
+  overflow-wrap: anywhere;
+  transition: border-color .15s ease;
+}
+.meta-link:hover { border-bottom-color: var(--int); }
 
 .tag {
   display: inline-block;
@@ -276,8 +403,8 @@ img { max-width: 100%; }
 .prose, .bio-text, .introduction-text {
   max-width: var(--measure);
   font-family: var(--font-read);
-  font-size: 17.5px;
-  line-height: 1.62;
+  font-size: 14.5px;
+  line-height: 1.5;
   color: var(--fg-soft);
 }
 .prose p, .introduction-text p { margin: 0 0 1em; }
@@ -309,10 +436,14 @@ img { max-width: 100%; }
   min-height: 0;
 }
 
+/* `relative`, and no `top`. It was `sticky; top: 96px` back when the page
+   scrolled; now that nothing does, the offset only pushed the centred photo
+   96px below centre — and `relative` still honours `top`, which is the same
+   trap that once threw the caption chip onto the timeline. `relative` is
+   required either way: the caption is positioned against this element. */
 .landing-photo {
   grid-area: photo;
-  position: sticky;
-  top: calc(var(--ch) * 4);
+  position: relative;
   margin: 0;
   width: fit-content;
   margin-inline: auto;
@@ -381,7 +512,7 @@ img { max-width: 100%; }
 .window-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   height: calc(var(--ch) * 1.4);
   padding: 0 12px;
   border-bottom: 1px solid var(--line-firm);
@@ -395,13 +526,43 @@ img { max-width: 100%; }
 }
 .window-path {
   color: var(--meta);
-  font-size: 11.5px;
+  font-size: 11px;
   letter-spacing: .02em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.window-body { padding: calc(var(--ch) * 1.1) calc(var(--ch) * 1.1) var(--ch); }
+.window-body { padding: calc(var(--ch) * .85) calc(var(--ch) * .95) calc(var(--ch) * .8); }
+
+/* Shell mode: a command has been run, so the panel belongs to the terminal.
+   `display: none` on a class, not the `hidden` attribute — a component
+   `display:` rule outranks the UA sheet and the element stays on screen. */
+.window-body.is-shell .window-intro { display: none; }
+.window-body.is-shell .term {
+  flex: 1 1 auto;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.window-hint { margin-left: auto; color: var(--meta); font-size: 10.5px; flex-shrink: 0; }
+
+/* the one-line shell at the foot of every view window */
+.term-compact {
+  flex: 0 0 auto;
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.term-compact .term-prompt { padding-top: 0; border-top: 0; }
+.term-compact-out {
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--meta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* ─── terminal ─── */
 .term {
@@ -420,10 +581,17 @@ img { max-width: 100%; }
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-bottom: 10px;
+  /* output stacks up from the prompt, the way a real shell fills — otherwise
+     the idle terminal is a block of text with dead space under it.
+     `margin-top: auto` on the first line rather than `justify-content: end`,
+     which clips the top of the scroll area once output overflows. */
+  display: flex;
+  flex-direction: column;
 }
+.term-body > :first-child { margin-top: auto; }
 .term-line {
   margin: 0 0 2px;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -450,11 +618,11 @@ img { max-width: 100%; }
   background: transparent;
   color: var(--fg);
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 12px;
   padding: 0;
   caret-color: var(--emph);
 }
-.term-hint { margin: 8px 0 0; font-size: 11px; color: var(--meta); }
+.term-hint { margin: 8px 0 0; font-size: 10.5px; color: var(--meta); }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px;
@@ -463,24 +631,32 @@ img { max-width: 100%; }
 }
 
 .window-body .affil { margin-bottom: var(--ch); }
+/* The bio is the one stretch of running text set in mono, because it lives
+   inside the window. Smaller and more leaded than the serif it replaced: mono
+   is ~20% wider per character and gets dense without the extra line-height. */
+/* the three employers are the one thing a recruiter scans this paragraph for,
+   so they carry weight — 700, because mono's 600 barely reads at 12.5px */
+.landing-prose strong { font-weight: 700; }
 .landing-prose {
-  margin-bottom: var(--ch);
-  font-size: 15px;
-  line-height: 1.58;
+  margin-bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  letter-spacing: -.006em;
 }
 
 /* 2x2 jump grid — the real navigation out of the landing */
 .nav-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: var(--ch);
+  gap: 6px;
+  margin-bottom: 12px;
 }
 .nav-card {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 11px 14px;
+  padding: 8px 12px;
   border: 1px solid var(--line-firm);
   border-radius: 10px;
   transition: border-color .15s ease, background .15s ease;
@@ -490,7 +666,7 @@ img { max-width: 100%; }
 .nav-card-desc { font-size: 11.5px; color: var(--meta); }
 
 .or-click {
-  margin: var(--ch) 0 10px;
+  margin: 12px 0 8px;
   text-align: center;
   font-size: 11.5px;
   letter-spacing: .04em;
@@ -538,7 +714,7 @@ img { max-width: 100%; }
   display: flex; flex-wrap: wrap; gap: 10px;
   font-family: var(--font-mono);
 }
-.about-btn, .modal-btn, .project-long-description, .contact-email {
+.about-btn, .modal-btn, .contact-email {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 16px;
   border: 1px solid var(--line-firm);
@@ -549,7 +725,7 @@ img { max-width: 100%; }
   font-size: 12.5px;
   transition: border-color .15s ease, color .15s ease;
 }
-.about-btn:hover, .modal-btn:hover, .project-long-description:hover {
+.about-btn:hover, .modal-btn:hover {
   border-color: var(--int); color: var(--int);
 }
 .about-icon-btn {
@@ -563,7 +739,7 @@ img { max-width: 100%; }
 .about-icon-btn:hover { border-color: var(--int); color: var(--int); }
 
 /* ─── archive grid (the older projects) ─── */
-.projects-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: calc(var(--ch) * 1.25); }
+.projects-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 .projects-pill {
   padding: 5px 14px;
   border: 1px solid var(--line-firm);
@@ -579,16 +755,64 @@ img { max-width: 100%; }
 
 .projects-grid { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .project-wrap { background: var(--bg); height: 100%; }
-.project-card { display: flex; flex-direction: column; height: 100%; padding: var(--ch); gap: 10px; }
-.project-card .thumb { display: none; }   /* archive is a list, not a gallery */
+.project-card { display: flex; flex-direction: column; height: 100%; padding: 8px 12px; gap: 3px; }
+/* A cropped band, not a gallery tile: the full 16/10 image at this column
+   width is 230px tall and three rows of that is two screens. `cover` keeps the
+   declared 840×525 from distorting. */
+.project-card .thumb {
+  margin: -8px -12px 2px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-sunk);
+  overflow: hidden;
+}
+.project-card .thumb img {
+  display: block;
+  width: 100%;
+  height: 104px;
+  object-fit: cover;
+  object-position: center 40%;
+}
+.thumb-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  height: 104px;
+  padding: 0 12px;
+}
+.thumb-placeholder-label {
+  color: var(--meta); font-size: 11px; text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* the modal shows the picture properly */
+.modal-figure {
+  margin: 0 0 var(--ch);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--bg-sunk);
+}
+.modal-figure img { display: block; width: 100%; height: auto; }
 
-.project-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.project-title { margin: 0; font-family: var(--font-mono); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
-.project-year { color: var(--meta); font-size: 11.5px; }
+.project-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; line-height: 1.4; }
+.project-title { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+/* the name is the control: a bare text button, no box */
+.project-open {
+  padding: 0; border: 0; background: none;
+  font-family: var(--font-mono); font-size: inherit; font-weight: inherit;
+  letter-spacing: inherit; color: var(--fg); text-align: left;
+  transition: color .15s ease;
+}
+.project-open:hover { color: var(--int); text-decoration: underline; text-underline-offset: 3px; }
+.project-year { color: var(--meta); font-size: 11.5px; flex-shrink: 0; }
 .project-category-badge { display: none; }
-.project-tech { margin: 0; color: var(--meta); font-size: 12px; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 6px; }
-.project-github-link { color: var(--int); font-size: 12px; }
+/* what the thing is, in the reading face — the only content on the card */
+.project-summary {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 13px;
+  line-height: 1.42;
+  color: var(--fg-soft);
+}
+.project-tech { margin: 0; color: var(--meta); font-size: 12px; line-height: 1.5; }
+.project-github-link { margin-top: auto; padding-top: 4px; color: var(--int); font-size: 12px; }
 .project-github-link:hover { text-decoration: underline; }
 
 /* ─── modal ─── */
@@ -630,37 +854,57 @@ img { max-width: 100%; }
 
 /* ─── skills ─── */
 .skills-bg-layer, .skills-blob, .hero-rule, .hero-rule-wrap { display: none; }
-.skills-grid { display: grid; gap: var(--ch); }
-.skill-card { border-top: 1px solid var(--line); padding-top: 12px; }
+.skills-grid { display: grid; gap: 14px calc(var(--ch) * 1.5); }
+.skill-card { border-top: 1px solid var(--line); padding-top: 10px; }
 .skill-category {
-  margin: 0 0 10px; font-family: var(--font-mono); font-size: 12px;
+  margin: 0 0 8px; line-height: 1.4; font-family: var(--font-mono); font-size: 12px;
   letter-spacing: .12em; text-transform: uppercase; color: var(--meta);
 }
-.skill-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.skill { display: grid; grid-template-columns: 1fr auto; gap: 12px; font-size: 12.5px; padding: 2px 0; }
-.skill-icon { display: none; }
+.skill-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+/* name on the chrome rail, evidence after it — one line, so a group of ten
+   skills stays scannable instead of running two lines deep each. */
+.skill {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  gap: 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  padding: 1px 0;
+}
 .skill-name { color: var(--fg); }
-.skill-level { color: var(--meta); font-size: 11.5px; }
+.skill-where { color: var(--meta); font-size: 11.5px; overflow-wrap: anywhere; }
 
 /* ─── timeline ─── */
-.timeline { border-top: 1px solid var(--line); }
-.tl-item { display: grid; grid-template-columns: 22ch 1fr; gap: 0 20px; padding: var(--ch) 0; border-bottom: 1px solid var(--line); }
+/* Seven roles, one screen: two columns of compact entries rather than one long
+   ladder. The range leads each entry instead of holding a 22ch rail. */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 calc(var(--ch) * 1.5);
+  border-top: 1px solid var(--line);
+}
+.tl-item { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .tl-dot { display: none; }
-.tl-range { margin: 0; color: var(--meta); font-size: 12px; }
+.tl-range { margin: 0 0 1px; color: var(--meta); font-size: 11.5px; line-height: 1.4; }
+.tl-who { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; line-height: 1.45; }
+/* Only the role takes a separator. The location often wraps to its own line,
+   and a leading "·" there reads as a stray bullet. */
+.tl-who .tl-role::before { content: "· "; color: var(--line-firm); }
 .tl-card { min-width: 0; }
-.tl-company { font-family: var(--font-mono); font-weight: 700; font-size: 15px; color: var(--fg); }
-.tl-role { margin: 2px 0 0; font-size: 12.5px; color: var(--fg); }
-.tl-location { margin: 0; font-size: 12px; color: var(--meta); }
+.tl-company { font-family: var(--font-mono); font-weight: 700; font-size: 13.5px; color: var(--fg); }
+.tl-role { margin: 0; font-size: 12px; color: var(--fg); }
+.tl-location { margin: 0; font-size: 11.5px; color: var(--meta); }
+.tl-location em { font-style: normal; }
 .tl-location em { font-style: normal; }
 .tl-bullets {
-  margin: 10px 0 0; padding-left: 16px;
-  font-family: var(--font-read); font-size: 15.5px; line-height: 1.55;
+  margin: 4px 0 0; padding-left: 15px;
+  font-family: var(--font-read); font-size: 13px; line-height: 1.4;
   color: var(--fg-soft); max-width: var(--measure);
 }
-.tl-bullets li { margin-bottom: 4px; }
+.tl-bullets li { margin-bottom: 2px; }
 
 /* ─── contact / footer ─── */
-.contact-section { padding: calc(var(--ch) * 3) 0; border-top: 2px solid var(--fg); }
+.contact-section { padding: 0 0 var(--ch); border-top: 0; }
 .contact-title { margin: 0 0 8px; font-family: var(--font-mono); font-size: clamp(20px, 3vw, 26px); font-weight: 700; letter-spacing: -.03em; }
 .contact-subtitle { margin: 0 0 var(--ch); font-family: var(--font-read); font-size: 17px; color: var(--fg-soft); max-width: var(--measure); }
 .contact-email { color: var(--int); border-color: var(--int); }
@@ -704,22 +948,30 @@ img { max-width: 100%; }
 /* ─── responsive ─── */
 @media (min-width: 861px) {
   .landing {
-    height: calc(100svh - (var(--ch) * 4.5));
+    /* `height`, not `min-height`: with min-height the column is free to grow
+       past the pane and nothing inside it ever shrinks, which is exactly how
+       the landing started overflowing again. */
+    height: 100%;
     padding-top: 0;
     padding-bottom: 0;
     align-items: stretch;
   }
 
-  .window {
+  /* Landing window only. Scoped deliberately: view windows are ordinary blocks
+     that grow with their content — inheriting `overflow: hidden` and a flex
+     floor from here would clip a view instead of letting its pane scroll. */
+  .landing .window {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
   }
-  /* The window absorbs leftover height. Inside it the intro yields first — it
-     shrinks and scrolls — while the terminal keeps a guaranteed floor, so it
-     can never be squeezed out of existence the way it was before. */
-  .window-body {
+  /* The window absorbs leftover height and splits it two-thirds intro,
+     one-third terminal. The terminal takes a fixed share rather than the
+     leftover — when it grew instead, it ate half the window and the bio got
+     clipped mid-sentence behind an inner scrollbar. The intro takes what's
+     left and scrolls only if it still doesn't fit. */
+  .landing .window-body {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -727,18 +979,17 @@ img { max-width: 100%; }
     min-height: 0;
   }
   .window-intro {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
-  .term { flex: 1 0 auto; min-height: 168px; }
+  .landing .term { flex: 0 0 30%; min-height: 124px; }
   .landing-photo {
-    position: relative;
     align-self: center;
     max-height: 100%;
   }
-  .landing-photo img { max-height: calc(100svh - (var(--ch) * 7)); width: auto; margin-inline: auto; }
+  .landing-photo img { max-height: calc(100% - var(--ch)); width: auto; margin-inline: auto; }
 }
 
 @media (min-width: 720px) {
@@ -748,6 +999,24 @@ img { max-width: 100%; }
 @media (min-width: 1000px) {
   .projects-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+/* Wide screens buy columns, and columns are what make a view fit one screen:
+   four skill groups in a row, seven roles in three. */
+@media (min-width: 1120px) {
+  /* Three columns for the roles. NOT four for the skills: narrow columns wrap
+     the evidence onto three lines each and the group gets *taller*, which is
+     how a 4-across stack ended up 571px deep. */
+  .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* the case study reads as two columns: the record on the left, the account
+     of it on the right */
+  .case-body {
+    display: grid;
+    /* the record side is wider: a diff line must not wrap (DESIGN.md §3) */
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+    gap: 0 calc(var(--ch) * 1.75);
+    align-items: start;
+  }
+  .case-body .meta { margin-bottom: 0; }
+}
 @media (max-width: 860px) {
   .term { min-height: 200px; }
   .landing {
@@ -755,7 +1024,10 @@ img { max-width: 100%; }
     grid-template-areas: "photo" "body";
     row-gap: calc(var(--ch) * 1.25);
   }
-  .landing-photo { position: static; max-width: 460px; }
+  /* `relative`, never `static` — the caption chip is absolutely positioned
+     against this element. With `static` it escapes to the page and lands on
+     top of the timeline. See CLAUDE.md, gotchas. */
+  .landing-photo { max-width: 460px; }
 }
 @media (max-width: 720px) {
   .tl-item { grid-template-columns: 1fr; gap: 6px; }

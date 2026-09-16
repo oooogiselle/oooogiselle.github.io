@@ -22,9 +22,14 @@ export default function Nav() {
   return (
     <header className="wr-nav">
       <a className="brand" href="#top">giselle wu</a>
+      {/* Every view has to be reachable without typing, so the bar carries all
+          five: the terminal is additive, never the only route. `about` is gone
+          — it pointed at nothing, and the bio lives on the front page, which
+          the brand link already returns to. */}
       <nav>
         <a href="#work">work</a>
-        <a href="#about">about</a>
+        <a href="#projects">archive</a>
+        <a href="#skills">stack</a>
         <a href="#experience">experience</a>
         <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">resume</a>
         <a href="#contact">contact</a>
