@@ -47,12 +47,12 @@ export default function Landing() {
             <div className="prose landing-prose">
               <p>
                 Hi there! I'm Giselle Wu, a fourth-year at Dartmouth studying computer
-                science and engineering, graduating in June 2027.
+                science and engineering (B.A. June 2027, B.E. November 2027), looking
+                for <strong>Summer 2027 internships</strong> in software, AI and product.
               </p>
               <p>
                 I'm drawn to the space where technology meets people, figuring out what
-                someone actually needs, then building it. I've chased that through
-                internships and personal projects. I'm currently a developer at{" "}
+                someone actually needs, then building it. I'm currently a developer at{" "}
                 <strong>DALI Lab</strong>, and I spent this past summer interning at{" "}
                 <strong>Visa</strong>, after a term at <strong>Siemens EDA</strong>.
               </p>
