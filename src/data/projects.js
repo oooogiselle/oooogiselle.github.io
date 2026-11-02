@@ -2,6 +2,30 @@
 // `summary` is the one line the card shows: what the thing is, before anyone
 // clicks. `description` is the long version, and only the modal reads it.
 export const projects = [
+  {
+    id: 10,
+    title: "DartAsk",
+    summary: "AI turns a vague need into a small, priced ask, and classmates do the helping.",
+    tech: "Next.js • Postgres • Claude API",
+    techLong: "Next.js, TypeScript, Postgres, Claude API, embeddings, Vitest, Playwright, Vercel",
+    year: "2026",
+    category: "Software",
+    description: "A mobile web app that helps Dartmouth students, starting with international students, ask for help. Built for the AI at 70 hackathon theme \"What must remain human?\": AI lowers the barrier to asking, and the helping stays human.\n\nThe AI turns a messy need into up to four small, editable asks, each with a suggested price, and never sends anything without a tap. A layered safety check, a deterministic keyword pass plus an LLM that can only raise severity, routes crisis messages to counseling resources and blocks graded-coursework asks before anything is posted.\n\nI led development (88 of 90 commits on a team of 3). Asks are matched to helpers by embedding similarity with a keyword fallback, and the core logic is covered by 21 Vitest suites and Playwright end-to-end tests.",
+    thumb: "/dartask.webp",
+    github: "https://github.com/oooogiselle/HackathonAI",
+  },
+  {
+    id: 11,
+    title: "Timeline To-Do",
+    summary: "Google Calendar events and to-dos on one timeline, on the web and iOS.",
+    tech: "Next.js • Expo • Supabase",
+    techLong: "TypeScript monorepo, Next.js, Expo (iOS), React Query, Supabase Postgres, Google Calendar API, Claude API, Vercel",
+    year: "2026",
+    category: "Software",
+    description: "A personal planner that puts Google Calendar events and to-dos on one timeline, so you can see the open time in your week and drag tasks into it.\n\nA TypeScript monorepo: a Next.js web app and an Expo iOS app share one React Query data layer with optimistic updates, on Supabase Postgres. A Claude API import turns syllabus PDFs into tasks behind a human review screen, with a monthly AI spend cap.\n\nSolo-built and still in progress.",
+    thumb: "/timeline.webp",
+    github: "https://github.com/oooogiselle/to-do",
+  },
   { id: 1,
     title: "DartBid",
     summary: "A marketplace where Dartmouth students buy and sell course enrollment spots in virtual currency.",
@@ -83,7 +107,6 @@ export const projects = [
     category: "Software",
     description: "A multiplayer Rogue-inspired game with a C client–server architecture. The server tracks the world; clients render only each player's field-of-view (fog-of-war). Win by collecting the most gold before all nuggets are gone.",
     thumb: "/nugget.webp",
-    github: "https://github.com/oooogiselle/nuggets-group-10",
   },
   {
     id: 8,
@@ -106,6 +129,5 @@ export const projects = [
     category: "Software",
     description: "Click any region on your webcam feed and the program automatically finds all regions of similar color and repaints them — playful and interactive.\n\nBuilt in Java using a region-growing flood-fill algorithm with BFS, BufferedImage for real-time capture, RGB similarity thresholds for region detection, and randomized recoloring for visualization.",
     thumb: "/webcam.webp",
-    github: "https://github.com/oooogiselle/webcam_based_painter",
   },
 ];

@@ -142,7 +142,7 @@ export default function Terminal({ onShell, compact = false, cwd = "~" }) {
             });
             push({
               kind: "out",
-              text: "Currently building ZebraMD at DALI Lab.",
+              text: "Currently building Custom Tours at DALI Lab.",
             });
           } else {
             push({ kind: "err", text: `no such file: ${arg || "?"}` });
